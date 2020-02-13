@@ -1,18 +1,18 @@
-package gofilebuildtags
+package internal
 
 import "errors"
 
-type tag struct {
+type Tag struct {
 	name string
 	len  int
 }
 
-func newTag(name string) (*tag, error) {
+func NewTag(name string) (*Tag, error) {
 	if name == "" {
 		return nil, errors.New("empty tag")
 	}
 
-	return &tag{
+	return &Tag{
 		name: name,
 		len:  len(name),
 	}, nil
