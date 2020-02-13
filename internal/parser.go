@@ -13,6 +13,7 @@ var (
 	ErrEmptyFileName = errors.New("empty file name")
 )
 
+// TODO: split into NameParser and ContentsParser
 type Parser interface {
 	ParseFileName(tag *Tag, fileName string) (bool, error)
 	ParseContents(tag *Tag, r io.Reader) (bool, error)
