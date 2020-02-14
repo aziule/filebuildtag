@@ -2,8 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"os"
 
 	"github.com/aziule/gofilebuildtags/internal"
 )
@@ -11,8 +9,9 @@ import (
 var ErrEmptyTagsList = errors.New("empty tags list")
 
 type Linter struct {
-	parser internal.Parser
-	tags   []*internal.Tag
+	fileNameParser internal.TagParser
+	contentsParser internal.TagParser
+	tags           []*internal.Tag
 }
 
 func NewLinter(tags []string) (*Linter, error) {
@@ -44,28 +43,21 @@ func NewLinter(tags []string) (*Linter, error) {
 		return nil, ErrEmptyTagsList
 	}
 
-	// TODO: make it configurable
-	parser := internal.NewTagParser("_test")
 	return &Linter{
-		parser: parser,
-		tags:   tagObjs,
+		fileNameParser: internal.NewFileNameParser("_test"), // TODO: make it configurable
+		contentsParser: internal.NewContentsParser(),
+		tags:           tagObjs,
 	}, nil
 }
 
 func (l *Linter) Check(fileName string) (bool, error) {
 	for _, tag := range l.tags {
-		_, err := l.parser.ParseFileName(tag, fileName)
+		_, err := l.fileNameParser.Parse(fileName, tag)
 		if err != nil {
 			return false, err
 		}
 
-		f, err := os.Open(fileName)
-		if err != nil {
-			return false, fmt.Errorf("could not open file %s: %v", fileName, err)
-		}
-		defer f.Close()
-
-		_, err = l.parser.ParseContents(tag, f)
+		_, err = l.contentsParser.Parse(fileName, tag)
 		if err != nil {
 			return false, err
 		}

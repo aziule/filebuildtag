@@ -8,7 +8,7 @@ import (
 )
 
 func Test_ParseFileName(t *testing.T) {
-	parser := NewTagParser("_test")
+	parser := NewFileNameParser("_test")
 
 	testCases := map[string]struct {
 		fileName    string
@@ -42,7 +42,7 @@ func Test_ParseFileName(t *testing.T) {
 			tag, err := NewTag(tC.tagName)
 			require.NoError(t, err)
 
-			got, err := parser.ParseFileName(tag, tC.fileName)
+			got, err := parser.Parse(tC.fileName, tag)
 			assert.Equal(t, tC.expected, got)
 
 			if tC.expectedErr != nil {

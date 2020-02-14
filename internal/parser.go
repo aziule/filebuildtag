@@ -3,8 +3,10 @@ package internal
 import (
 	"bufio"
 	"errors"
-	"io"
+	"fmt"
+	"os"
 	"path/filepath"
+	"regexp"
 )
 
 const goExt string = ".go"
@@ -13,25 +15,23 @@ var (
 	ErrEmptyFileName = errors.New("empty file name")
 )
 
-// TODO: split into NameParser and ContentsParser
-type Parser interface {
-	ParseFileName(tag *Tag, fileName string) (bool, error)
-	ParseContents(tag *Tag, r io.Reader) (bool, error)
+type TagParser interface {
+	Parse(string, *Tag) (bool, error)
 }
 
-type TagParser struct {
+type FileNameParser struct {
 	suffix    string
 	suffixLen int
 }
 
-func NewTagParser(suffix string) *TagParser {
-	return &TagParser{
+func NewFileNameParser(suffix string) *FileNameParser {
+	return &FileNameParser{
 		suffix:    suffix + goExt,
 		suffixLen: len(suffix) + len(goExt),
 	}
 }
 
-func (p *TagParser) ParseFileName(tag *Tag, fileName string) (bool, error) {
+func (p *FileNameParser) Parse(fileName string, tag *Tag) (bool, error) {
 	if fileName == "" {
 		return false, ErrEmptyFileName
 	}
@@ -55,8 +55,32 @@ func (p *TagParser) ParseFileName(tag *Tag, fileName string) (bool, error) {
 	return fileName[namelen-tag.len-p.suffixLen:namelen-p.suffixLen] == tag.name, nil
 }
 
-func (p *TagParser) ParseContents(tag *Tag, r io.Reader) (bool, error) {
-	buf := bufio.NewReader(r)
+type ContentsParser struct {
+	regexTemplate string
+	regex         map[string]*regexp.Regexp
+}
+
+func NewContentsParser() *ContentsParser {
+	return &ContentsParser{
+		regexTemplate: "^/",
+		regex:         make(map[string]*regexp.Regexp),
+	}
+}
+
+func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
+	f, err := os.Open(fileName)
+	if err != nil {
+		return false, fmt.Errorf("could not open file %s: %v", fileName, err)
+	}
+	defer f.Close()
+
+	reg, ok := p.regex[tag.name]
+	if !ok {
+		reg = regexp.MustCompile("")
+		p.regex[tag.name] = reg
+	}
+
+	buf := bufio.NewReader(f)
 	hasTag := false
 	done := false
 
