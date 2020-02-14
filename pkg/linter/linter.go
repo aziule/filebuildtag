@@ -44,7 +44,7 @@ func NewLinter(tags []string) (*Linter, error) {
 	}
 
 	return &Linter{
-		fileNameParser: internal.NewFileNameParser("_test"), // TODO: make it configurable
+		fileNameParser: internal.NewFileNameParser(internal.TestFileSuffix, internal.GoFileExt),
 		contentsParser: internal.NewContentsParser(),
 		tags:           tagObjs,
 	}, nil

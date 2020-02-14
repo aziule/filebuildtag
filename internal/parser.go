@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 )
 
-const goExt string = ".go"
+const (
+	TestFileSuffix string = "_test"
+	GoFileExt             = ".go"
+)
 
 var (
 	ErrEmptyFileName = errors.New("empty file name")
@@ -22,12 +24,16 @@ type TagParser interface {
 type FileNameParser struct {
 	suffix    string
 	suffixLen int
+	ext       string
+	extLen    int
 }
 
-func NewFileNameParser(suffix string) *FileNameParser {
+func NewFileNameParser(suffix, ext string) *FileNameParser {
 	return &FileNameParser{
-		suffix:    suffix + goExt,
-		suffixLen: len(suffix) + len(goExt),
+		suffix:    suffix,
+		suffixLen: len(suffix),
+		ext:       ext,
+		extLen:    len(ext),
 	}
 }
 
@@ -42,28 +48,26 @@ func (p *FileNameParser) Parse(fileName string, tag *Tag) (bool, error) {
 		return false, nil
 	}
 
-	if ext != goExt {
+	if ext != p.ext {
 		return false, nil
 	}
 
 	namelen := len(fileName)
 
-	if namelen-p.suffixLen < tag.len {
+	if namelen-p.suffixLen-p.extLen < tag.len {
 		return false, nil
 	}
 
-	return fileName[namelen-tag.len-p.suffixLen:namelen-p.suffixLen] == tag.name, nil
+	return fileName[namelen-tag.len-p.suffixLen-p.extLen:namelen-p.suffixLen-p.extLen] == tag.name, nil
 }
 
 type ContentsParser struct {
-	regexTemplate string
-	regex         map[string]*regexp.Regexp
+	expected map[string]string
 }
 
 func NewContentsParser() *ContentsParser {
 	return &ContentsParser{
-		regexTemplate: "^/",
-		regex:         make(map[string]*regexp.Regexp),
+		expected: make(map[string]string),
 	}
 }
 
@@ -74,10 +78,10 @@ func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 	}
 	defer f.Close()
 
-	reg, ok := p.regex[tag.name]
+	expected, ok := p.expected[tag.name]
 	if !ok {
-		reg = regexp.MustCompile("")
-		p.regex[tag.name] = reg
+		expected = "// +build " + tag.name
+		p.expected[tag.name] = expected
 	}
 
 	buf := bufio.NewReader(f)
@@ -96,11 +100,9 @@ func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 			continue
 		}
 
-		if line[:9] != "// +build" {
-			done = true
-			continue
+		if line == expected {
+			hasTag = true
 		}
-		hasTag = true
 	}
 
 	return hasTag, nil
