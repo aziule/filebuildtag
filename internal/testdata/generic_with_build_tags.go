@@ -1,5 +1,5 @@
-// +build integration
-// +build functional
+// +build foo
+// +build bar
 
 package testdata
 

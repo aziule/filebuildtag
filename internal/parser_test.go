@@ -8,7 +8,11 @@ import (
 )
 
 func Test_ParseFileName(t *testing.T) {
-	parser := NewFileNameParser(TestFileSuffix, GoFileExt)
+	tag, err := NewTag("foo")
+	require.NoError(t, err)
+	tags := []*Tag{tag}
+	parser, err := NewFileNameParser(TestFileSuffix, GoFileExt, tags)
+	require.NoError(t, err)
 
 	testCases := map[string]struct {
 		fileName    string
@@ -17,29 +21,34 @@ func Test_ParseFileName(t *testing.T) {
 		expectedErr error
 	}{
 		"placeholder_tag_suffix.ext": {
-			fileName: "foo_integration_test.go",
-			tagName:  "integration",
+			fileName: "something_foo_test.go",
+			tagName:  "foo",
 			expected: true,
 		},
 		"tag_suffix.ext": {
-			fileName: "integration_test.go",
-			tagName:  "integration",
+			fileName: "foo_test.go",
+			tagName:  "foo",
 			expected: true,
 		},
 		"tag.ext": {
-			fileName: "integration.go",
-			tagName:  "integration",
+			fileName: "foo.go",
+			tagName:  "foo",
 			expected: false,
 		},
 		"placeholder_suffix.ext": {
-			fileName: "foo_test.go",
-			tagName:  "integration",
+			fileName: "something_test.go",
+			tagName:  "foo",
 			expected: false,
 		},
 		"tag_placeholder_suffix.ext": {
-			fileName: "integration_foo_test.go",
-			tagName:  "integration",
+			fileName: "foo_something_test.go",
+			tagName:  "foo",
 			expected: false,
+		},
+		"_tag_suffix.ext": {
+			fileName: "_foo_test.go",
+			tagName:  "foo",
+			expected: true,
 		},
 	}
 	for name, tC := range testCases {
@@ -66,9 +75,14 @@ func Test_ParseFileContents(t *testing.T) {
 		expected    bool
 		expectedErr error
 	}{
-		"": {
+		"tag matches in first position": {
 			fileName: "./testdata/generic_with_build_tags.go",
-			tagName:  "integration",
+			tagName:  "foo",
+			expected: true,
+		},
+		"tag matches in second position": {
+			fileName: "./testdata/generic_with_build_tags.go",
+			tagName:  "bar",
 			expected: true,
 		},
 	}

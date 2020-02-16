@@ -5,12 +5,17 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
+	"regexp"
 )
 
 const (
 	TestFileSuffix string = "_test"
 	GoFileExt             = ".go"
+)
+
+const (
+	regexFmt       string = `(?:[\w_])*%s%s%s`
+	contentsPrefix string = "// +build "
 )
 
 var (
@@ -22,19 +27,23 @@ type TagParser interface {
 }
 
 type FileNameParser struct {
-	suffix    string
-	suffixLen int
-	ext       string
-	extLen    int
+	regexs map[string]*regexp.Regexp
 }
 
-func NewFileNameParser(suffix, ext string) *FileNameParser {
-	return &FileNameParser{
-		suffix:    suffix,
-		suffixLen: len(suffix),
-		ext:       ext,
-		extLen:    len(ext),
+func NewFileNameParser(suffix, ext string, tags []*Tag) (*FileNameParser, error) {
+	p := &FileNameParser{
+		regexs: make(map[string]*regexp.Regexp),
 	}
+
+	for _, tag := range tags {
+		regex, err := regexp.Compile(fmt.Sprintf(regexFmt, tag.name, suffix, ext))
+		if err != nil {
+			return nil, fmt.Errorf("could not compile regex for tag %s: %v", tag.name, err)
+		}
+		p.regexs[tag.name] = regex
+	}
+
+	return p, nil
 }
 
 func (p *FileNameParser) Parse(fileName string, tag *Tag) (bool, error) {
@@ -42,23 +51,12 @@ func (p *FileNameParser) Parse(fileName string, tag *Tag) (bool, error) {
 		return false, ErrEmptyFileName
 	}
 
-	ext := filepath.Ext(fileName)
-
-	if ext == "" {
-		return false, nil
+	regex, ok := p.regexs[tag.name]
+	if !ok {
+		return false, errors.New("tag mismatch")
 	}
 
-	if ext != p.ext {
-		return false, nil
-	}
-
-	namelen := len(fileName)
-
-	if namelen-p.suffixLen-p.extLen < tag.len {
-		return false, nil
-	}
-
-	return fileName[namelen-tag.len-p.suffixLen-p.extLen:namelen-p.suffixLen-p.extLen] == tag.name, nil
+	return regex.Match([]byte(fileName)), nil
 }
 
 type ContentsParser struct {
@@ -80,7 +78,7 @@ func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 
 	expected, ok := p.expected[tag.name]
 	if !ok {
-		expected = "// +build " + tag.name
+		expected = contentsPrefix + tag.name
 		p.expected[tag.name] = expected
 	}
 
@@ -89,19 +87,30 @@ func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 	done := false
 
 	for !done {
-		line, err := buf.ReadString('\n')
+		line, _, err := buf.ReadLine()
 		if err != nil {
+			fmt.Println("err", err)
 			done = true
 			continue
 		}
 
-		if len(line) <= 9+tag.len {
+		if len(line) < len(contentsPrefix)+tag.len {
+			fmt.Println("invalid lgn", len(line), len(contentsPrefix)+tag.len)
 			done = true
 			continue
 		}
 
-		if line == expected {
+		if string(line) == expected {
 			hasTag = true
+			done = true
+			fmt.Println("done, ok")
+			continue
+		}
+
+		//fmt.Println("*" + line[:len(contentsPrefix)] + "*")
+		if string(line)[:len(contentsPrefix)] == contentsPrefix {
+			fmt.Println("continue", string(line)[:len(contentsPrefix)])
+			continue
 		}
 	}
 
