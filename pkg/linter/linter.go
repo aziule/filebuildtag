@@ -43,7 +43,7 @@ func NewLinter(tags []string) (*Linter, error) {
 		return nil, ErrEmptyTagsList
 	}
 
-	fileNameParser, err := internal.NewFileNameParser(internal.TestFileSuffix, internal.GoFileExt, tagObjs)
+	fileNameParser, err := internal.NewFileNameParser(internal.TestFileSuffix, tagObjs)
 	if err != nil {
 		return nil, err
 	}

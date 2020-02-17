@@ -8,10 +8,14 @@ BIN_PATH=$(BIN_DIR)/gofilebuildtags.so
 default: help
 .PHONY: default
 
-## test: Run tests
+## test: Run unit tests
 test:
 	$(GO) test ./... -race -count=1 -failfast
 .PHONY: test
+
+test-integration:
+	$(GO) test ./... -race -count=1 -failfast -tags=integration
+.PHONY: test-integration
 
 ## build: Build the source as a .so plugin
 build:
@@ -23,10 +27,9 @@ clean-bin:
 	rm -rf $(BIN_DIR)/*
 .PHONY: clean-bin
 
-## help: Display the available targets
 help: Makefile
 	@echo
-	@echo "Available targets:"
+	@echo "Available commands:"
 	@echo
 	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /' | LANG=C sort
 	@echo

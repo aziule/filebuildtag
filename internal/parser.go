@@ -10,11 +10,8 @@ import (
 
 const (
 	TestFileSuffix string = "_test"
-	GoFileExt             = ".go"
-)
 
-const (
-	regexFmt       string = `(?:[\w_])*%s%s%s`
+	regexFmt       string = `(?:[\w_])*%s%s\.go`
 	contentsPrefix string = "// +build "
 )
 
@@ -30,13 +27,13 @@ type FileNameParser struct {
 	regexs map[string]*regexp.Regexp
 }
 
-func NewFileNameParser(suffix, ext string, tags []*Tag) (*FileNameParser, error) {
+func NewFileNameParser(suffix string, tags []*Tag) (*FileNameParser, error) {
 	p := &FileNameParser{
 		regexs: make(map[string]*regexp.Regexp),
 	}
 
 	for _, tag := range tags {
-		regex, err := regexp.Compile(fmt.Sprintf(regexFmt, tag.name, suffix, ext))
+		regex, err := regexp.Compile(fmt.Sprintf(regexFmt, tag.name, suffix))
 		if err != nil {
 			return nil, fmt.Errorf("could not compile regex for tag %s: %v", tag.name, err)
 		}
@@ -89,13 +86,11 @@ func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 	for !done {
 		line, _, err := buf.ReadLine()
 		if err != nil {
-			fmt.Println("err", err)
 			done = true
 			continue
 		}
 
 		if len(line) < len(contentsPrefix)+tag.len {
-			fmt.Println("invalid lgn", len(line), len(contentsPrefix)+tag.len)
 			done = true
 			continue
 		}
@@ -103,13 +98,10 @@ func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 		if string(line) == expected {
 			hasTag = true
 			done = true
-			fmt.Println("done, ok")
 			continue
 		}
 
-		//fmt.Println("*" + line[:len(contentsPrefix)] + "*")
 		if string(line)[:len(contentsPrefix)] == contentsPrefix {
-			fmt.Println("continue", string(line)[:len(contentsPrefix)])
 			continue
 		}
 	}
