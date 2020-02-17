@@ -2,18 +2,22 @@ package main
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/aziule/gofilebuildtags/internal"
 )
 
+// ErrEmptyTagsList is an error returned when no tags are provided.
 var ErrEmptyTagsList = errors.New("empty tags list")
 
+// Linter is the main linter object, used to parse file names or file contents.
 type Linter struct {
 	fileNameParser internal.TagParser
 	contentsParser internal.TagParser
 	tags           []*internal.Tag
 }
 
+// NewLinter creates a new Linter.
 func NewLinter(tags []string) (*Linter, error) {
 	nbTags := len(tags)
 
@@ -43,7 +47,7 @@ func NewLinter(tags []string) (*Linter, error) {
 		return nil, ErrEmptyTagsList
 	}
 
-	fileNameParser, err := internal.NewFileNameParser(internal.TestFileSuffix, tagObjs)
+	fileNameParser, err := internal.NewFileNameParser(tagObjs)
 	if err != nil {
 		return nil, err
 	}
@@ -55,26 +59,52 @@ func NewLinter(tags []string) (*Linter, error) {
 	}, nil
 }
 
-func (l *Linter) Check(fileName string) (bool, error) {
+// Check tries to parse a file using both its name and its contents and checks if the file should implement
+// a tag among the list of provided tags when creating the linter.
+func (l *Linter) Check(fileName string) ([]*Issue, error) {
+	var issues []*Issue
+
 	for _, tag := range l.tags {
-		_, err := l.fileNameParser.Parse(fileName, tag)
+		inName, err := l.fileNameParser.Parse(fileName, tag)
 		if err != nil {
-			return false, err
+			issues = append(issues, &Issue{
+				FileName: fileName,
+				Reason:   err.Error(),
+			})
+			continue
 		}
 
-		_, err = l.contentsParser.Parse(fileName, tag)
+		inContents, err := l.contentsParser.Parse(fileName, tag)
 		if err != nil {
-			return false, err
+			issues = append(issues, &Issue{
+				FileName: fileName,
+				Reason:   err.Error(),
+			})
+			continue
 		}
 
-		// fmt.Println(fileName, tag, inName, inFile)
+		if inName && !inContents {
+			issues = append(issues, &Issue{
+				FileName: fileName,
+				Reason:   fmt.Sprintf("tag %s found in the file name but missing from the build tags", tag.Name()),
+			})
+			continue
+		}
+
+		if !inName && inContents {
+			issues = append(issues, &Issue{
+				FileName: fileName,
+				Reason:   fmt.Sprintf("tag %s found in the file build tags but missing from the file name", tag.Name()),
+			})
+			continue
+		}
 	}
 
-	return true, nil
+	return issues, nil
 }
 
+// Issue represents an issue that occurred when parsing a file.
 type Issue struct {
 	FileName string
 	Reason   string
-	Line     int
 }

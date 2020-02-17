@@ -12,7 +12,7 @@ func Test_ParseFileName(t *testing.T) {
 	tag, err := NewTag("foo")
 	require.NoError(t, err)
 	tags := []*Tag{tag}
-	parser, err := NewFileNameParser(TestFileSuffix, tags)
+	parser, err := NewFileNameParser(tags)
 	require.NoError(t, err)
 
 	testCases := map[string]struct {

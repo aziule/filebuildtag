@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	// TestFileSuffix represents the suffix expected in Go test files
 	TestFileSuffix string = "_test"
 
 	regexFmt       string = `(?:[\w_])*%s%s\.go`
@@ -19,21 +20,24 @@ var (
 	ErrEmptyFileName = errors.New("empty file name")
 )
 
+// TagParser is the interface used to parse a tag from a string.
 type TagParser interface {
 	Parse(string, *Tag) (bool, error)
 }
 
+// FileNameParser implements the TagParser interface and parses a tag from a file name.
 type FileNameParser struct {
 	regexs map[string]*regexp.Regexp
 }
 
-func NewFileNameParser(suffix string, tags []*Tag) (*FileNameParser, error) {
+// NewFileNameParser creates a new FileNameParser.
+func NewFileNameParser(tags []*Tag) (*FileNameParser, error) {
 	p := &FileNameParser{
 		regexs: make(map[string]*regexp.Regexp),
 	}
 
 	for _, tag := range tags {
-		regex, err := regexp.Compile(fmt.Sprintf(regexFmt, tag.name, suffix))
+		regex, err := regexp.Compile(fmt.Sprintf(regexFmt, tag.name, TestFileSuffix))
 		if err != nil {
 			return nil, fmt.Errorf("could not compile regex for tag %s: %v", tag.name, err)
 		}
@@ -43,6 +47,7 @@ func NewFileNameParser(suffix string, tags []*Tag) (*FileNameParser, error) {
 	return p, nil
 }
 
+// Parse implementation.
 func (p *FileNameParser) Parse(fileName string, tag *Tag) (bool, error) {
 	if fileName == "" {
 		return false, ErrEmptyFileName
@@ -56,16 +61,19 @@ func (p *FileNameParser) Parse(fileName string, tag *Tag) (bool, error) {
 	return regex.Match([]byte(fileName)), nil
 }
 
+// ContentsParser implements the TagParser interface and parses the content of a file, given its name.
 type ContentsParser struct {
 	expected map[string]string
 }
 
+// NewContentsParser creates a new ContentsParser.
 func NewContentsParser() *ContentsParser {
 	return &ContentsParser{
 		expected: make(map[string]string),
 	}
 }
 
+// Parse implementation.
 func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 	f, err := os.Open(fileName)
 	if err != nil {
