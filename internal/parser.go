@@ -98,6 +98,11 @@ func (p *ContentsParser) Parse(fileName string, tag *Tag) (bool, error) {
 			continue
 		}
 
+		// Allow blank lines, as per Go's specs regarding build tags
+		if len(line) == 0 {
+			continue
+		}
+
 		if len(line) < len(contentsPrefix)+tag.len {
 			done = true
 			continue

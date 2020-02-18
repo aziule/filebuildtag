@@ -23,6 +23,16 @@ func Test_ParseFileContents(t *testing.T) {
 			expected:    false,
 			expectedErr: errors.New("could not open file foo.go: open foo.go: no such file or directory"),
 		},
+		"tag matches": {
+			fileName: "./testdata/single_tag.go",
+			tagName:  "foo",
+			expected: true,
+		},
+		"tag matches with blank lines": {
+			fileName: "./testdata/single_tag_with_blank_lines.go",
+			tagName:  "foo",
+			expected: true,
+		},
 		"tag matches in first position": {
 			fileName: "./testdata/several_tags.go",
 			tagName:  "foo",
