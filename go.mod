@@ -1,4 +1,4 @@
-module github.com/aziule/filebuildtags
+module github.com/aziule/filebuildtag
 
 go 1.14
 

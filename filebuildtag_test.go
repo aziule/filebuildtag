@@ -1,4 +1,4 @@
-package filebuildtags
+package filebuildtag
 
 import (
 	"testing"

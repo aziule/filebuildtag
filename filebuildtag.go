@@ -1,4 +1,4 @@
-package filebuildtags
+package filebuildtag
 
 import (
 	"go/ast"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aziule/filebuildtags/internal"
+	"github.com/aziule/filebuildtag/internal"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
