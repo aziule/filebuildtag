@@ -1,4 +1,6 @@
-# filebuildtag
+<p align="center">
+    # filebuildtag
+</p>
 
 Linter to check that Go files have the expected build tags in the `// +build` instruction.
 
