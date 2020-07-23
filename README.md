@@ -1,6 +1,6 @@
 <p align="center">
     <h3 align="center">filebuildtag</h3>
-    <p align="center">Linter to check that Go files have the expected build tags in the "// +build" instruction.</p>
+    <p align="center">Linter to check that Go files have the expected build tags in the "// +build" instruction</p>
 </p>
 
 ---
