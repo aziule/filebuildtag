@@ -27,9 +27,13 @@ func Test_Lint(t *testing.T) {
 		"filebuildtag - exact match": {
 			pattern: "filebuildtag_exact",
 			buildTags: []string{
-				"pref1_tag1_suff.go:tag1",
-				"pref2_tag2_suff.go:tag2",
+				"pref_tag1_suff.go:tag1",
+				"pref_tag2_suff.go:tag2",
 			},
+		},
+		"filebuildtag - no tags": {
+			pattern:   "filebuildtag_exact",
+			buildTags: []string{},
 		},
 	}
 	for name, tt := range testCases {
