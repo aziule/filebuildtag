@@ -1,4 +1,4 @@
-package gofilebuildtags
+package filebuildtags
 
 import (
 	"go/ast"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aziule/gofilebuildtags/internal"
+	"github.com/aziule/filebuildtags/internal"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/passes/inspect"
 	"golang.org/x/tools/go/ast/inspector"
@@ -55,9 +55,7 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	inspector.Preorder(nodeFilter, func(node ast.Node) {
 		f := node.(*ast.File)
 		fileName := getFileName(pass, f.Pos())
-		//fmt.Println(fileName)
 		tags := internal.CheckGoFile(pass, f)
-		//fmt.Println("\tfound>", tags) // TODO: when testing, make sure we go through these files
 
 		for pattern, tag := range expectedTags {
 			ok, _ := filepath.Match(pattern, fileName)

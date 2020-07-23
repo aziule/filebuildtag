@@ -1,5 +1,9 @@
+// Package internal contains code from the Go tool's linter, "buildtag".
+//
+// The code was adapted to match the needs and requirements of the filebuildtag linter.
+//
 // Copyright 2013 The Go Authors. All rights reserved.
-
+// Original code: https://github.com/golang/tools/tree/master/go/analysis/passes/buildtag
 package internal
 
 import (
@@ -11,6 +15,7 @@ import (
 	"golang.org/x/tools/go/analysis"
 )
 
+// CheckGoFile analyses a single Go file and returns the found tags, if any. It also reports any linting error.
 func CheckGoFile(pass *analysis.Pass, f *ast.File) []string {
 	tags := []string{}
 	pastCutoff := false

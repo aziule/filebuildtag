@@ -1,4 +1,4 @@
-package gofilebuildtags
+package filebuildtags
 
 import (
 	"testing"
