@@ -55,4 +55,8 @@ func Test_Baz(t *testing.T){ /* ... */ }
 ```
 
 To make sure the integration test files always have the `// +build integration` instruction, use the following arguments
-to the linter: `-filetag="*_integration_test.go:integration"`.
+with the linter:
+
+```
+-filetag="*_integration_test.go:integration"
+```
