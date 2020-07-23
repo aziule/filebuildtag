@@ -12,42 +12,48 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
+// Doc of the linter.
+const Doc = `check that Go files have the expected build tags in the "// +build" instruction
+
+Define file patterns and assign them to build tags, for instance:
+	File "bar.go" must have the "baz" build tag
+	Files "*_integration_test.go" must have the "integration" build tag`
+
 // Analyzer used to run the linter.
 var Analyzer = &analysis.Analyzer{
 	Name:     "filebuildtag",
-	Doc:      "Check that files with specific naming have the expected build tags.",
+	Doc:      Doc,
 	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }
 
-type buildTagsFlag []string
+type fileTagsFlag []string
 
-func (f *buildTagsFlag) String() string {
-	return "foo"
+func (f *fileTagsFlag) String() string {
+	return ""
 }
 
-func (f *buildTagsFlag) Set(value string) error {
+func (f *fileTagsFlag) Set(value string) error {
 	*f = append(*f, value)
 	return nil
 }
 
-var buildTags buildTagsFlag
+var fileTags fileTagsFlag
 
 func init() {
-	Analyzer.Flags.Var(&buildTags, "buildtags", "")
+	Analyzer.Flags.Var(&fileTags, "filetag", `assign a file name pattern to a tag using the form <file-name-pattern>:<tag>, for example "foo/*_integration_test.go:integration"`)
 }
 
 func run(pass *analysis.Pass) (interface{}, error) {
-	if len(buildTags) == 0 {
+	if len(fileTags) == 0 {
 		return nil, nil
 	}
 
 	expectedTags := map[string]string{}
-	for _, buildTag := range buildTags {
-		parts := strings.Split(buildTag, ":")
+	for i := range fileTags {
+		parts := strings.Split(fileTags[i], ":")
 		expectedTags[parts[0]] = parts[1]
 	}
-
 	inspector := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	nodeFilter := []ast.Node{
 		(*ast.File)(nil),

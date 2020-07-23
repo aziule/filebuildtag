@@ -38,9 +38,9 @@ func Test_Lint(t *testing.T) {
 	}
 	for name, tt := range testCases {
 		t.Run(name, func(t *testing.T) {
-			buildTags = buildTagsFlag{}
+			fileTags = fileTagsFlag{}
 			for _, buildTag := range tt.buildTags {
-				err := buildTags.Set(buildTag)
+				err := fileTags.Set(buildTag)
 				require.NoError(t, err)
 			}
 			analysistest.Run(t, testdata, Analyzer, tt.pattern)

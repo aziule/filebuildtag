@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/quasilyte/go-ruleguard/analyzer"
+	"github.com/aziule/filebuildtag"
 	"golang.org/x/tools/go/analysis/singlechecker"
 )
 
 func main() {
-	singlechecker.Main(analyzer.Analyzer)
+	singlechecker.Main(filebuildtag.Analyzer)
 }
