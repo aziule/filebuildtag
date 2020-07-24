@@ -13,16 +13,15 @@ Let's say we want to enforce the "integration" build tag on our integration test
 
 Given the following, sample folder structure:
 ```
-project
-│
-└───pkg
-│   │   foo.go
-│   │   bar.go
+.
+├───pkg
+│   ├─- foo.go
+│   └── bar.go
 │
 └───test
-    │   foo.go
-    │   bar_integration_test.go
-    │   baz_integration_test.go
+    ├─- foo.go
+    ├─- bar_integration_test.go
+    └── baz_integration_test.go
 ```
 
 Test file `foo_test.go` is a unit test file.
