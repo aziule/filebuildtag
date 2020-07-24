@@ -7,13 +7,6 @@ github.com/davecgh/go-spew/spew
 ## explicit
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/quasilyte/go-ruleguard v0.1.2-0.20200318202121-b00d7a75d3d8
-## explicit
-github.com/quasilyte/go-ruleguard/analyzer
-github.com/quasilyte/go-ruleguard/dslgen
-github.com/quasilyte/go-ruleguard/internal/mvdan.cc/gogrep
-github.com/quasilyte/go-ruleguard/ruleguard
-github.com/quasilyte/go-ruleguard/ruleguard/typematch
 # github.com/stretchr/testify v1.6.1
 ## explicit
 github.com/stretchr/testify/assert
