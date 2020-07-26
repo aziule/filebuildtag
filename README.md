@@ -1,17 +1,15 @@
-<p align="center">
-    <h1 align="center">filebuildtag</h1>
-    <p align="center">Linter to check that Go files have the expected build tags in the `// +build` instruction</p>
-</p>
+# filebuildtag
+Linter to check that Go files have the expected `// +build <tag>` instruction
 
 ---
 
-> [Jump to the installation.](#Installation)
+[Jump to the installation and usage.](#installation-and-usage)
 
 ## Benefits
 
 Match file name patterns to build tags and make sure these files always have the correct build tags in the `// +build` instruction.
 
-Built on top of Go's `buildtag` linter it supports all of its features related to Go files (see [license](#License) for more information about their license).
+Built on top of Go's `buildtag` linter it supports all of its features related to Go files (see [license](#license) for more information about their license).
 
 ## Features
 
