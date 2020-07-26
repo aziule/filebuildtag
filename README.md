@@ -102,6 +102,10 @@ cfg.WithFiletag("foo", "tag1").
 analyzer := NewAnalyzer(cfg)
 ```
 
+## Roadmap
+
+* Support for folder name matching ("/pkg/**/foo.go", "/pkg/foo/*.go", etc.).
+
 ## Contributing
 
 A bug to report? A feature to add? Please feel free to open an issue or to propose pull requests!
