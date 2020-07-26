@@ -1,9 +1,10 @@
+// Copyright 2013 The Go Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+//
 // Package internal contains code from the Go tool's linter, "buildtag".
 //
 // The code was adapted to match the needs and requirements of the filebuildtag linter.
-//
-// Copyright 2013 The Go Authors. All rights reserved.
-// Original code: https://github.com/golang/tools/tree/master/go/analysis/passes/buildtag
 package internal
 
 import (

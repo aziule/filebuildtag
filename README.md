@@ -1,62 +1,78 @@
 <p align="center">
-    <h3 align="center">filebuildtag</h3>
-    <p align="center">Linter to check that Go files have the expected build tags in the "// +build" instruction</p>
+    <h1 align="center">filebuildtag</h1>
+    <p align="center">Linter to check that Go files have the expected build tags in the `// +build` instruction</p>
 </p>
 
 ---
 
-Built on top of Go tool's linter "buildtag".
+> [Jump to the installation.](#Installation)
 
-# Example - Unit VS integration tests
+## Benefits
 
-Let's say we want to enforce the "integration" build tag on our integration test files.
+Match file name patterns to build tags and make sure these files always have the correct build tags in the `// +build` instruction.
 
-Given the following, sample folder structure:
+Built on top of Go's `buildtag` linter it supports all of its features related to Go files (see [license](#License) for more information about their license).
+
+## Features
+
+* **1-to-1 match**: every file named `foo.go` **must** include the `bar` build tag.
+* **many-to-1 match**: every file named `*foo.go` **must** include the `bar` build tag.
+* Go's **buildtag** support: supports features from the linter on Go files.
+
+And also:
+
+* Run it as a standalone command using `cmd/filebuildtag`.
+* Integrate it as a part of a runner using the provided `analysis.Analyzer`.
+
+## Use cases
+
+* Avoid running CI with tests you thought should run because you forgot to add the expected build tag to your files.
+For example, never forget to add `// +build integration` to your integration test files named `*_integration_test.go`.
+
+## Installation and usage
+
+**With Go install**
+
+```shell
+GO111MODULE=on go get github.com/aziule/filebuildtag/cmd/filebuildtag
 ```
-.
-├───pkg
-│   ├─- foo.go
-│   └── bar.go
-│
-└───test
-    ├─- foo.go
-    ├─- bar_integration_test.go
-    └── baz_integration_test.go
+
+**Build from source**
+1. Clone the repo
+2. Build the executable
+```shell
+make build
 ```
 
-Test file `foo_test.go` is a unit test file.
+**Usage**
 
-Test files `bar_integration_test.go` and `baz_integration_test.go` should only run when the `integration` build 
-tag is present.
+```shell
+// All files named "foo.go" must have the "bar" tag
+filebuildtag -filetags "foo.go:bar" .
 
-File: foo.go
+// All files ending with "_integration_test.go" must have the "integration" tag
+filebuildtag -filetags "*_integration_test.go:integration" .
+
+// Both of the above
+filebuildtag -filetags "foo.go:bar,*_integration_test.go:integration" .
+// 
+```
+
+*Note: patterns are matched using Go's `filepath.Match` method and support all of its features.*
+
+## Using with runners
+
+To facilitate the integration with existing linter runners, you can use the `Analyzer` provided:
 ```go
-package test
-
-func Test_Foo(t *testing.T){ /* ... */ }
+cfg := filebuildtag.Config{}
+cfg.WithFiletag("foo", "tag1").
+   .WithFileTag("bar", "tag2")
+analyzer := NewAnalyzer(cfg)
 ```
 
-File: bar_integration_test.go
-```go
-// +build integration
+## License
 
-package test
+Some of the code was copied from Go's `buildtag` linter and adapted to match the needs of the `filebuildtag` linter.
+Those files have the mandatory copyright header and their license can be found in `LICENSE.google`.
 
-func Test_Bar(t *testing.T){ /* ... */ }
-```
-
-File: baz_integration_test.go
-```go
-// +build integration
-
-package test
-
-func Test_Baz(t *testing.T){ /* ... */ }
-```
-
-To make sure the integration test files always have the `// +build integration` instruction, use the following arguments
-with the linter:
-
-```
--filetag="*_integration_test.go:integration"
-```
+You can also find the original code [here](https://github.com/golang/tools/tree/master/go/analysis/passes/buildtag).
