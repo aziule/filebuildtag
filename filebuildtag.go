@@ -23,17 +23,38 @@ var analyzer = &analysis.Analyzer{
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }
 
+// Config contains the available configuration options for the linter.
+type Config struct {
+	debug    bool
+	filetags map[string]string
+}
+
+// WithDebug enables or disables debug mode.
+func (c *Config) WithDebug(enabled bool) *Config {
+	c.debug = enabled
+	return c
+}
+
+// WithFiletag sets the expected tag for a given file name pattern.
+func (c *Config) WithFiletag(filenamePattern, tag string) *Config {
+	if c.filetags == nil {
+		c.filetags = make(map[string]string)
+	}
+	c.filetags[filenamePattern] = tag
+	return c
+}
+
 // NewAnalyzer creates an analysis.Analyzer with config params, ready to be used.
-func NewAnalyzer(filetags map[string]string) *analysis.Analyzer {
+func NewAnalyzer(cfg Config) *analysis.Analyzer {
 	analyzer.Run = func(pass *analysis.Pass) (interface{}, error) {
-		run(filetags, pass)
+		run(cfg, pass)
 		return nil, nil
 	}
 	return analyzer
 }
 
-func run(filetags map[string]string, pass *analysis.Pass) {
-	if len(filetags) == 0 || pass == nil {
+func run(cfg Config, pass *analysis.Pass) {
+	if len(cfg.filetags) == 0 || pass == nil {
 		return
 	}
 	inspector := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
@@ -44,7 +65,7 @@ func run(filetags map[string]string, pass *analysis.Pass) {
 		f := node.(*ast.File)
 		filename := getFilename(pass, f)
 		tags := internal.CheckGoFile(pass, f)
-		for pattern, tag := range filetags {
+		for pattern, tag := range cfg.filetags {
 			ok, _ := filepath.Match(pattern, filename)
 			if !ok {
 				continue
