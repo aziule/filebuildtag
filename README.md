@@ -14,15 +14,19 @@ Built on top of Go's `buildtag` linter, it supports all of the features related 
 ## Features
 
 **1-to-1 match**
+
 Every file named `foo.go` must include the `bar` build tag.
 
 **many-to-1 match**
+
 Every file named `*foo.go` must include the `bar` build tag.
 
 **Go's `buildtag` linter support**
+
 Supports features from the linter on Go files.
 
 **And also**
+
 * Run it as a standalone command using `cmd/filebuildtag`.
 * Integrate it as a part of a runner using the provided `analysis.Analyzer`.
 
