@@ -25,14 +25,7 @@ var analyzer = &analysis.Analyzer{
 
 // Config contains the available configuration options for the linter.
 type Config struct {
-	debug    bool
 	filetags map[string]string
-}
-
-// WithDebug enables or disables debug mode.
-func (c *Config) WithDebug(enabled bool) *Config {
-	c.debug = enabled
-	return c
 }
 
 // WithFiletag sets the expected tag for a given file name pattern.

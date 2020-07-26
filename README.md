@@ -98,7 +98,7 @@ To facilitate the integration with existing linter runners, you can use the `Ana
 ```go
 cfg := filebuildtag.Config{}
 cfg.WithFiletag("foo", "tag1").
-   .WithFileTag("bar", "tag2")
+   .WithFiletag("bar", "tag2")
 analyzer := NewAnalyzer(cfg)
 ```
 
