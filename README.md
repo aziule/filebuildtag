@@ -13,37 +13,64 @@ Built on top of Go's `buildtag` linter, it supports all of the features related 
 
 ## Features
 
-**1-to-1 match**
+### One-To-One match
 
-Every file named `foo.go` must include the `bar` build tag.
+Example: files named `foo.go` must include the `bar` build tag.
 
-**many-to-1 match**
+File: `foo.go`
+```go
+// +build foo
 
-Every file named `*foo.go` must include the `bar` build tag.
+package foo
+```
 
-**Go's `buildtag` linter support**
+### Many-To-One match
+
+Example: file ending with `_suffix.go` must include the `bar` build tag.
+
+File: `a_suffix.go`
+```go
+// +build bar
+
+package foo
+```
+
+File: `b_suffix.go`
+```go
+// +build bar
+
+package foo
+```
+
+### Go's `buildtag` linter support
 
 Supports features from the linter on Go files.
 
-**And also**
+### And also
 
-* Run it as a standalone command using `cmd/filebuildtag`.
-* Integrate it as a part of a runner using the provided `analysis.Analyzer`.
+* Run it as a standalone command
+* Integrate it as a part of a runner using the provided `analysis.Analyzer`
 
-## Use cases
+## Real world use case
 
-* Avoid running CI with tests you thought should run because you forgot to add the expected build tag to your files.
-For example, never forget to add `// +build integration` to your integration test files named `*_integration_test.go`.
+Let's say you name your integration tests `*_integration_test.go` and you run them as part of your CI pipeline.
+
+You might forget to add the `// +build integration` instruction on a newly created file, or you might remove it inadvertently, 
+and it can have some consequences, such as never running during your pipeline.
+
+As a consequence, you think your code works when it doesn't, because it is not tested (but you believe it is).
+
+This linter can help with such issues and let you know when you forgot to add the expected build tags.
 
 ## Installation and usage
 
-**With Go install**
+**Install with Go install**
 
 ```shell
 GO111MODULE=on go get github.com/aziule/filebuildtag/cmd/filebuildtag
 ```
 
-**Build from source**
+**Install and build from source**
 1. Clone the repo
 2. Build the executable
 ```shell
@@ -63,7 +90,7 @@ filebuildtag -filetags "*_integration_test.go:integration" .
 filebuildtag -filetags "foo.go:bar,*_integration_test.go:integration" .
 ```
 
-*Note: patterns are matched using Go's `filepath.Match` method and support all of its features.*
+*Note: file name patterns match using Go's `filepath.Match` method and therefore support all of its features.*
 
 ## Using with runners
 
