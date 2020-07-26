@@ -2,9 +2,7 @@ package filebuildtag
 
 import (
 	"go/ast"
-	"go/token"
 	"path/filepath"
-	"strings"
 
 	"github.com/aziule/filebuildtag/internal"
 	"golang.org/x/tools/go/analysis"
@@ -19,40 +17,24 @@ Define file patterns and assign them to build tags, for instance:
 	File "bar.go" must have the "baz" build tag
 	Files "*_integration_test.go" must have the "integration" build tag`
 
-// Analyzer used to run the linter.
-var Analyzer = &analysis.Analyzer{
+var analyzer = &analysis.Analyzer{
 	Name:     "filebuildtag",
 	Doc:      Doc,
-	Run:      run,
 	Requires: []*analysis.Analyzer{inspect.Analyzer},
 }
 
-type fileTagsFlag []string
-
-func (f *fileTagsFlag) String() string {
-	return ""
-}
-
-func (f *fileTagsFlag) Set(value string) error {
-	*f = append(*f, value)
-	return nil
-}
-
-var fileTags fileTagsFlag
-
-func init() {
-	Analyzer.Flags.Var(&fileTags, "filetag", `assign a file name pattern to a tag using the form <file-name-pattern>:<tag>, for example "foo/*_integration_test.go:integration"`)
-}
-
-func run(pass *analysis.Pass) (interface{}, error) {
-	if len(fileTags) == 0 {
+// NewAnalyzer creates an analysis.Analyzer with config params, ready to be used.
+func NewAnalyzer(filetags map[string]string) *analysis.Analyzer {
+	analyzer.Run = func(pass *analysis.Pass) (interface{}, error) {
+		run(filetags, pass)
 		return nil, nil
 	}
+	return analyzer
+}
 
-	expectedTags := map[string]string{}
-	for i := range fileTags {
-		parts := strings.Split(fileTags[i], ":")
-		expectedTags[parts[0]] = parts[1]
+func run(filetags map[string]string, pass *analysis.Pass) {
+	if len(filetags) == 0 || pass == nil {
+		return
 	}
 	inspector := pass.ResultOf[inspect.Analyzer].(*inspector.Inspector)
 	nodeFilter := []ast.Node{
@@ -60,11 +42,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 	}
 	inspector.Preorder(nodeFilter, func(node ast.Node) {
 		f := node.(*ast.File)
-		fileName := getFileName(pass, f.Pos())
+		filename := getFilename(pass, f)
 		tags := internal.CheckGoFile(pass, f)
-
-		for pattern, tag := range expectedTags {
-			ok, _ := filepath.Match(pattern, fileName)
+		for pattern, tag := range filetags {
+			ok, _ := filepath.Match(pattern, filename)
 			if !ok {
 				continue
 			}
@@ -82,11 +63,10 @@ func run(pass *analysis.Pass) (interface{}, error) {
 			}
 		}
 	})
-	return nil, nil
 }
 
-func getFileName(pass *analysis.Pass, pos token.Pos) string {
-	path := pass.Fset.Position(pos).Filename
-	_, file := filepath.Split(path)
-	return file
+func getFilename(pass *analysis.Pass, file *ast.File) string {
+	path := pass.Fset.Position(file.Pos()).Filename
+	_, filename := filepath.Split(path)
+	return filename
 }
