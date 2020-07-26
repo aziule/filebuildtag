@@ -3,7 +3,7 @@ Linter to check that Go files have the expected `// +build <tag>` instruction
 
 ---
 
-[Jump to the installation and usage.](#installation-and-usage)
+[Jump to Installation and usage](#installation-and-usage)
 
 ## Benefits
 
