@@ -102,6 +102,10 @@ cfg.WithFiletag("foo", "tag1").
 analyzer := NewAnalyzer(cfg)
 ```
 
+## Contributing
+
+A bug to report? A feature to add? Please feel free to open an issue or to propose pull requests!
+
 ## License
 
 Some of the code was copied from Go's `buildtag` linter and adapted to match the needs of the `filebuildtag` linter.
