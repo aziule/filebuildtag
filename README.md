@@ -9,16 +9,20 @@ Linter to check that Go files have the expected `// +build <tag>` instruction
 
 Match file name patterns to build tags and make sure these files always have the correct build tags in the `// +build` instruction.
 
-Built on top of Go's `buildtag` linter it supports all of its features related to Go files (see [license](#license) for more information about their license).
+Built on top of Go's `buildtag` linter, it supports all of the features related to Go files.
 
 ## Features
 
-* **1-to-1 match**: every file named `foo.go` **must** include the `bar` build tag.
-* **many-to-1 match**: every file named `*foo.go` **must** include the `bar` build tag.
-* Go's **buildtag** support: supports features from the linter on Go files.
+**1-to-1 match**
+Every file named `foo.go` must include the `bar` build tag.
 
-And also:
+**many-to-1 match**
+Every file named `*foo.go` must include the `bar` build tag.
 
+**Go's `buildtag` linter support**
+Supports features from the linter on Go files.
+
+**And also**
 * Run it as a standalone command using `cmd/filebuildtag`.
 * Integrate it as a part of a runner using the provided `analysis.Analyzer`.
 
@@ -53,7 +57,6 @@ filebuildtag -filetags "*_integration_test.go:integration" .
 
 // Both of the above
 filebuildtag -filetags "foo.go:bar,*_integration_test.go:integration" .
-// 
 ```
 
 *Note: patterns are matched using Go's `filepath.Match` method and support all of its features.*
