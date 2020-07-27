@@ -29,7 +29,7 @@ package foo
 
 ### Many-To-One match
 
-Example: file ending with `_suffix.go` must include the `bar` build tag.
+Example: files ending with `_suffix.go` must include the `bar` build tag.
 
 File: `a_suffix.go`
 ```go
@@ -93,7 +93,8 @@ filebuildtag -filetags "*_integration_test.go:integration" .
 filebuildtag -filetags "foo.go:bar,*_integration_test.go:integration" .
 ```
 
-*Note: file name patterns match using Go's `filepath.Match` method and therefore support all of its features.*
+*Note: file name patterns match using Go's `filepath.Match` method and therefore support all of its features.
+See [File patterns](#file-patterns) for more information and examples.*
 
 ## Using with runners
 
@@ -101,13 +102,45 @@ To facilitate the integration with existing linter runners, you can use the `Ana
 ```go
 cfg := filebuildtag.Config{}
 cfg.WithFiletag("foo.go", "tag1").
-   .WithFiletag("*_suffix.go", "tag2")
+    WithFiletag("*_suffix.go", "tag2")
 analyzer := NewAnalyzer(cfg)
 ```
 
+## File patterns
+
+### Syntax
+
+From the official `filepath.Match` doc, file patterns syntax is the following:
+
+```
+pattern:
+	{ term }
+term:
+	'*'         matches any sequence of non-Separator characters
+	'?'         matches any single non-Separator character
+	'[' [ '^' ] { character-range } ']'
+	            character class (must be non-empty)
+	c           matches character c (c != '*', '?', '\\', '[')
+	'\\' c      matches character c
+
+character-range:
+	c           matches character c (c != '\\', '-', ']')
+	'\\' c      matches character c
+	lo '-' hi   matches character c for lo <= c <= hi
+```
+
+### Examples
+
+| file 👇 pattern 👉 | foo.go | *.go | ba?.go |
+|-----------|--------|------|--------|
+| foo.go    | ✅     | ✅   | 🚫     |
+| bar.go    | 🚫     | ✅   | ✅     |
+| baz.go    | 🚫     | ✅   | ✅     |
+| something | 🚫     | 🚫   | 🚫     |
+
 ## Roadmap
 
-* Support for folder name matching ("/pkg/**/foo.go", "/pkg/foo/*.go", etc.).
+* Support for folder name matching (`/pkg/**/foo.go`, `/pkg/foo/*.go`, etc.).
 
 ## Contributing
 
