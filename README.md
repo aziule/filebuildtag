@@ -97,8 +97,8 @@ filebuildtag -filetags "foo.go:bar,*_integration_test.go:integration" .
 To facilitate the integration with existing linter runners, you can use the `Analyzer` provided:
 ```go
 cfg := filebuildtag.Config{}
-cfg.WithFiletag("foo", "tag1").
-   .WithFiletag("bar", "tag2")
+cfg.WithFiletag("foo.go", "tag1").
+   .WithFiletag("*_suffix.go", "tag2")
 analyzer := NewAnalyzer(cfg)
 ```
 
