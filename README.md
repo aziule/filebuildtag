@@ -19,7 +19,7 @@ Example: files named `foo.go` must include the `bar` build tag.
 
 File: `foo.go`
 ```go
-// +build foo
+// +build bar
 
 package foo
 ```
