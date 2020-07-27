@@ -3,6 +3,9 @@ Linter to check that Go files have the expected `// +build <tag>` instruction
 
 ---
 
+[![GoDoc](https://godoc.org/github.com/aziule/filebuildtag?status.svg)](https://godoc.org/github.com/aziule/filebuildtag)
+[![Go Report Card](https://goreportcard.com/badge/github.com/aziule/filebuildtag)](https://goreportcard.com/report/github.com/aziule/filebuildtag)
+
 [Jump to Installation and usage](#installation-and-usage)
 
 ## Benefits

@@ -13,7 +13,7 @@ cover: ## Run unit tests coverage
 	@go tool cover -html=coverage.out
 
 lint: ## Lint Go files (Docker must be up)
-	@$(GOLANGCI-LINT) run -E golint,gofumpt,gosec,unparam,goconst,prealloc --exclude-use-default=false --deadline=5m
+	@$(GOLANGCI-LINT) run
 
 test: ## Run unit tests
 	@go test -race -failfast -count=1 .

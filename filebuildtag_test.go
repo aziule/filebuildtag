@@ -3,8 +3,22 @@ package filebuildtag
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"golang.org/x/tools/go/analysis/analysistest"
 )
+
+func Test_Config(t *testing.T) {
+	cfg := Config{}
+	cfg.
+		WithFiletag("foo", "bar").
+		WithFiletag("baz", "bus")
+	assert.Equal(t, Config{
+		filetags: map[string]string{
+			"foo": "bar",
+			"baz": "bus",
+		},
+	}, cfg)
+}
 
 func Test_Lint(t *testing.T) {
 	testdata := analysistest.TestData()

@@ -1,3 +1,4 @@
+// Package filebuildtag exposes the necessary code to use the filebuildtag linter.
 package filebuildtag
 
 import (
