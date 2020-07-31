@@ -1,5 +1,5 @@
 # filebuildtag
-Linter to check that Go files have the expected `// +build <tag>` instruction
+Linter to check that Go files have the `// +build <expected tag>` instruction
 
 ---
 
@@ -10,9 +10,10 @@ Linter to check that Go files have the expected `// +build <tag>` instruction
 
 ## Benefits
 
-Match file name patterns to build tags and make sure these files always have the correct build tags in the `// +build` instruction.
+Match file name patterns to build tags and make sure these files always have the expected build tags in the `// +build` instruction.
 
-Built on top of Go's `buildtag` linter, it supports all of the features related to Go files.
+Built on top of Go's `buildtag` linter, it supports all of the features related to Go files, such as checking if the
+`// +build` instruction is correctly placed (above the `package` line, etc.).
 
 ## Features
 
@@ -84,27 +85,28 @@ make build
 
 ```shell
 // All files named "foo.go" must have the "bar" tag
-filebuildtag -filetags "foo.go:bar" .
+filebuildtag --filetags foo.go:bar ./...
 
 // All files ending with "_integration_test.go" must have the "integration" tag
-filebuildtag -filetags "*_integration_test.go:integration" .
+filebuildtag --filetags *_integration_test.go:integration ./...
 
 // Both of the above
-filebuildtag -filetags "foo.go:bar,*_integration_test.go:integration" .
+filebuildtag --filetags foo.go:bar,*_integration_test.go:integration ./...
+
+// Only check that the `// +build` instructions are correct (no args to pass) 
+filebuildtag ./...
 ```
 
-*Note: file name patterns match using Go's `filepath.Match` method and therefore support all of its features.
+*Note: files naming patterns are matched using Go's `filepath.Match` method. Therefore, you can use any of its supported patterns.
 See [File patterns](#file-patterns) for more information and examples.*
 
-## Using with runners
+## Using with linters runners
 
-To facilitate the integration with existing linter runners, you can use the `Analyzer` provided:
-```go
-cfg := filebuildtag.Config{}
-cfg.WithFiletag("foo.go", "tag1").
-    WithFiletag("*_suffix.go", "tag2")
-analyzer := NewAnalyzer(cfg)
-```
+This linter exposes an `Analyzer` (accessible via `filebuildtag.Analyzer`), which is defined as 
+a `golang.org/x/tools/go/analysis/analysis.Analyzer` struct. 
+
+Most of the linters runners expect linters to be defined like so, therefore you should not have much trouble integrating it
+following the linters runner's doc.
 
 ## File patterns
 
