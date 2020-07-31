@@ -17,9 +17,9 @@ import (
 // Doc of the linter.
 const Doc = `check that Go files have the expected build tags in the "// +build" instruction
 
-Define file patterns and assign them to build tags, for instance:
-	File "bar.go" must have the "baz" build tag
-	Files "*_integration_test.go" must have the "integration" build tag`
+Bind file patterns to build tags, for instance:
+	File named "bar.go" must have the "baz" build tag
+	Files matching "*_integration_test.go" must have the "integration" build tag`
 
 var Analyzer = &analysis.Analyzer{
 	Name:     "filebuildtag",
