@@ -1,5 +1,5 @@
 # filebuildtag
-Linter to check that Go files have the `// +build <expected tag>` instruction
+Linter that matches Go file naming patterns to their expected build tags.
 
 ---
 
@@ -10,10 +10,7 @@ Linter to check that Go files have the `// +build <expected tag>` instruction
 
 ## Benefits
 
-Match file name patterns to build tags and make sure these files always have the expected build tags in the `// +build` instruction.
-
-Built on top of Go's `buildtag` linter, it supports all of the features related to Go files, such as checking if the
-`// +build` instruction is correctly placed (above the `package` line, etc.).
+Match file naming patterns to build tags and make sure these files always have the expected build tags in the `// +build` instruction.
 
 ## Features
 
@@ -48,7 +45,7 @@ package foo
 
 ### Go's `buildtag` linter support
 
-Supports features from the linter on Go files.
+Built on top of the `buildtag` linter, it supports its Go files features.
 
 ### And also
 
