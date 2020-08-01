@@ -102,7 +102,7 @@ func Test_parseFlags(t *testing.T) {
 
 func newFlagSet(t *testing.T, args string) flag.FlagSet {
 	fs := flags()
-	err := fs.Set(flagFiletagsName, args)
+	err := fs.Set(FlagFiletagsName, args)
 	require.NoError(t, err)
 	return fs
 }
