@@ -21,7 +21,7 @@ This linter can help with such issues and let you know when you forgot to add th
 
 ## Features
 
-### One-To-One match
+### Exact match
 
 Example: files named `foo.go` must include the `bar` build tag.
 
@@ -32,7 +32,7 @@ File: `foo.go`
 package foo
 ```
 
-### Many-To-One match
+### Wildcard match
 
 Example: files ending with `_suffix.go` must include the `bar` build tag.
 
