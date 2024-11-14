@@ -1,5 +1,5 @@
 # Variables
-GOLANGCI-LINT-VERSION=v1.28.2
+GOLANGCI-LINT-VERSION=v1.62.0
 GOLANGCI-LINT=docker run --env=GOFLAGS=-mod=vendor --rm -v $(CURDIR):/app -w /app golangci/golangci-lint:$(GOLANGCI-LINT-VERSION) golangci-lint
 
 # Targets
