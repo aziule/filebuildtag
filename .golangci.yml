@@ -3,7 +3,6 @@ issues:
 
 linters:
   enable:
-    - golint
     - gofumpt
     - gosec
     - unparam

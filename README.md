@@ -1,5 +1,5 @@
 # filebuildtag
-Linter that matches Go file naming patterns to their expected build tags.
+Linter enforcing files to contain expected build tags (`// +build` instruction), based on the file name.
 
 ---
 
@@ -8,13 +8,20 @@ Linter that matches Go file naming patterns to their expected build tags.
 
 [Jump to Installation and usage](#installation-and-usage)
 
-## Benefits
+## Real world use case
 
-Match file naming patterns to build tags and make sure these files always have the expected build tags in the `// +build` instruction.
+Let's say you put integration tests in files named `*_integration_test.go` and you run them as part of your CI pipeline.
+
+You might forget to add the `// +build integration` instruction on a newly created file, or you might remove it inadvertently,
+and it can have some consequences, such as never running during the CI pipeline.
+
+As a consequence, you think your code works when it doesn't, because it is not tested, but you believe it is.
+
+This linter can help with such issues and let you know when you forgot to add the expected build tags.
 
 ## Features
 
-### One-To-One match
+### Exact match
 
 Example: files named `foo.go` must include the `bar` build tag.
 
@@ -25,7 +32,7 @@ File: `foo.go`
 package foo
 ```
 
-### Many-To-One match
+### Wildcard match
 
 Example: files ending with `_suffix.go` must include the `bar` build tag.
 
@@ -45,30 +52,19 @@ package foo
 
 ### Go's `buildtag` linter support
 
-Built on top of the `buildtag` linter, it supports its Go files features.
+`filebuildtag` is built on top of the `buildtag` linter, hence it supports its features.
 
 ### And also
 
 * Run it as a standalone command
 * Integrate it as a part of a runner using the provided `analysis.Analyzer`
 
-## Real world use case
-
-Let's say you name your integration tests `*_integration_test.go` and you run them as part of your CI pipeline.
-
-You might forget to add the `// +build integration` instruction on a newly created file, or you might remove it inadvertently, 
-and it can have some consequences, such as never running during your pipeline.
-
-As a consequence, you think your code works when it doesn't, because it is not tested (but you believe it is).
-
-This linter can help with such issues and let you know when you forgot to add the expected build tags.
-
 ## Installation and usage
 
 **Install with Go install**
 
 ```shell
-GO111MODULE=on go get github.com/aziule/filebuildtag/cmd/filebuildtag
+go get github.com/aziule/filebuildtag/cmd/filebuildtag
 ```
 
 **Install and build from source**
@@ -85,10 +81,10 @@ make build
 filebuildtag --filetags foo.go:bar ./...
 
 // All files ending with "_integration_test.go" must have the "integration" tag
-filebuildtag --filetags *_integration_test.go:integration ./...
+filebuildtag --filetags "*_integration_test.go:integration" ./...
 
 // Both of the above
-filebuildtag --filetags foo.go:bar,*_integration_test.go:integration ./...
+filebuildtag --filetags "foo.go:bar,*_integration_test.go:integration" ./...
 
 // Only check that the `// +build` instructions are correct (no args to pass) 
 filebuildtag ./...
@@ -96,6 +92,8 @@ filebuildtag ./...
 
 *Note: files naming patterns are matched using Go's `filepath.Match` method. Therefore, you can use any of its supported patterns.
 See [File patterns](#file-patterns) for more information and examples.*
+
+Head to the [test scenarios](./filebuildtag_test.go) for more examples.
 
 ## Using with linters runners
 
@@ -137,6 +135,22 @@ character-range:
 | baz.go             | 🚫     | ✅   | ✅     | 🚫        |
 | a_test.go          | 🚫     | ✅   | 🚫     | ✅        |
 | something          | 🚫     | 🚫   | 🚫     | 🚫        |
+
+## Development
+
+
+
+**Run tests**
+
+```shell
+make test
+```
+
+**Lint**
+
+```shell
+make lint
+```
 
 ## Roadmap
 
