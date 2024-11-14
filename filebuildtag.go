@@ -16,17 +16,17 @@ import (
 
 const (
 	// Doc of the linter.
-	Doc = `check that Go files have the expected build tags in the "// +build" instruction
+	Doc = `ensure Go files have the expected "// +build <tag>" instruction based on the file name
 
-Bind file patterns to build tags, for instance:
-	File named "bar.go" must have the "baz" build tag
-	Files matching "*_integration_test.go" must have the "integration" build tag`
+Bind file names to their expected build tags, such as:
+	Files named "foo.go" must have the "foo" build tag
+	Files with the suffix "*_integration_test.go" must have the "integration" build tag`
 	// FlagFiletagsName is the name of the default filetags flag. It is exported to be reused from linters runners.
 	FlagFiletagsName = "filetags"
 	// FlagFiletagsDoc is the usage doc of the default filetags flag. It is exported to be reused from linters runners.
-	FlagFiletagsDoc = `Comma separated list of file names and build tags using the form "pattern:tag". For example:
-- Single file: "*foo.go:tag1"
-- Multiple files: "*foo.go:tag1,*foo2.go:tag2"`
+	FlagFiletagsDoc = `Comma-separated list of file names and build tags using the form "pattern:tag". For example:
+- Single pattern: "*foo.go:tag1"
+- Multiple patterns: "*foo.go:tag1,*foo2.go:tag2"`
 )
 
 var Analyzer = &analysis.Analyzer{

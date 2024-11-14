@@ -136,6 +136,22 @@ character-range:
 | a_test.go          | 🚫     | ✅   | 🚫     | ✅        |
 | something          | 🚫     | 🚫   | 🚫     | 🚫        |
 
+## Development
+
+
+
+**Run tests**
+
+```shell
+make test
+```
+
+**Lint**
+
+```shell
+make lint
+```
+
 ## Roadmap
 
 * Support for folder name matching (`/pkg/**/foo.go`, `/pkg/foo/*.go`, etc.).
