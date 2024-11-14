@@ -17,21 +17,21 @@ func Test_Lint(t *testing.T) {
 		pattern string
 		flags   string
 	}{
-		"buildtag - std lib linter's original test file": {
-			pattern: "buildtag",
-			flags:   "*:foo",
-		},
-		"filebuildtag - wildcard match": {
+		"match files with a wildcard": {
 			pattern: "filebuildtag_wildcard",
 			flags:   "*tag1_suff.go:tag1,*tag2_suff.go:tag2",
 		},
-		"filebuildtag - exact match": {
+		"match exact file names": {
 			pattern: "filebuildtag_exact",
 			flags:   "pref_tag1_suff.go:tag1,pref_tag2_suff.go:tag2",
 		},
-		"filebuildtag - no tags": {
+		"match exact file name without tags": {
 			pattern: "filebuildtag_exact",
 			flags:   "",
+		},
+		"the std lib linter's original test file must have the foo tag": {
+			pattern: "buildtag",
+			flags:   "*:foo",
 		},
 	}
 	for name, tt := range testCases {
