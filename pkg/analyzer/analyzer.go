@@ -1,5 +1,5 @@
-// Package filebuildtag exposes the necessary code to use the filebuildtag linter.
-package filebuildtag
+// Package analyzer exposes the analyzer.Analyzer object and code to use the filebuildtag linter.
+package analyzer
 
 import (
 	"flag"

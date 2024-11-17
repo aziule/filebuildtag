@@ -1,4 +1,4 @@
-package filebuildtag
+package analyzer
 
 import (
 	"errors"
@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
 	"github.com/stretchr/testify/require"
 	"golang.org/x/tools/go/analysis/analysistest"
 )
@@ -17,19 +16,19 @@ func Test_Lint(t *testing.T) {
 		pattern string
 		flags   string
 	}{
-		"match files with a wildcard": {
+		"successfully match files with a wildcard": {
 			pattern: "filebuildtag_wildcard",
 			flags:   "*tag1_suff.go:tag1,*tag2_suff.go:tag2",
 		},
-		"match exact file names": {
+		"successfully match exact file names": {
 			pattern: "filebuildtag_exact",
 			flags:   "pref_tag1_suff.go:tag1,pref_tag2_suff.go:tag2",
 		},
-		"match exact file name without tags": {
+		"successfully match exact file name without tags": {
 			pattern: "filebuildtag_exact",
 			flags:   "",
 		},
-		"the std lib linter's original test file must have the foo tag": {
+		"successfully assess that the std lib linter's original test file must have the foo tag": {
 			pattern: "buildtag",
 			flags:   "*:foo",
 		},
