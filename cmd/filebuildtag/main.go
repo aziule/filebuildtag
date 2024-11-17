@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/aziule/filebuildtag"
+	"github.com/aziule/filebuildtag/pkg/analyzer"
 	"golang.org/x/tools/go/analysis/singlechecker"
 )
 
 func main() {
-	singlechecker.Main(filebuildtag.Analyzer)
+	singlechecker.Main(analyzer.Analyzer)
 }
